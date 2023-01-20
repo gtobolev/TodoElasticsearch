@@ -21,6 +21,7 @@ import com.example.baseServer.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.core.CountRequest;
@@ -28,6 +29,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -62,9 +64,11 @@ public class TodoService {
 
         SearchRequest searchRequest = new SearchRequest("todo");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.matchAllQuery());
+        searchSourceBuilder.query(QueryBuilders.matchAllQuery()).size(10000);
+
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
+
 
         List<TodoEntity> articles = new ArrayList<>();
 
