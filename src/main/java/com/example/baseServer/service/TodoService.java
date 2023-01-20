@@ -24,15 +24,10 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.core.CountRequest;
-import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.reindex.BulkByScrollResponse;
-import org.elasticsearch.index.reindex.DeleteByQueryRequest;
-import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -55,9 +50,9 @@ public class TodoService {
     }
 
     @Transactional
-    public BaseSuccessResponse delete(Long id) {
+    public BaseSuccessResponse delete(String id) {
 
-        todoRepository.deleteById(id.toString());
+        todoRepository.deleteById(id);
 
         return BaseSuccessResponse.ok();
     }
@@ -97,7 +92,7 @@ public class TodoService {
     @Transactional
     public BaseSuccessResponse patchStatus(ChangeStatusTodoDto statusTodoDto, String id) {
 
-        TodoEntity entity =  todoRepository.findById(id.toString()).orElseThrow();
+        TodoEntity entity =  todoRepository.findById(id).orElseThrow();
         entity.setStatus(statusTodoDto.getStatus());
         entity.setUpdatedAt(LocalDateTime.now().toString());
         todoRepository.save(entity);
@@ -116,14 +111,18 @@ public class TodoService {
     }
 
     @Transactional
-    public BaseSuccessResponse deleteAllReady() {
-        DeleteByQueryRequest request = new DeleteByQueryRequest("todo");
-        request.setQuery(QueryBuilders.matchQuery("status", "true"));
+    public BaseSuccessResponse deleteAllReady() throws IOException {
+//        DeleteByQueryRequest request = new DeleteByQueryRequest("todo");
+//        request.setQuery(QueryBuilders.matchQuery("status", "true"));
+//
+//        BulkByScrollResponse response = esClient.deleteByQuery(request, RequestOptions.DEFAULT);
+
+        todoRepository.deleteAllByStatus(true);
 
         return BaseSuccessResponse.ok();
     }
 
-    public CustomSuccessResponse search(Integer page, Integer perPage, Boolean statusFromRequest) throws Exception {
+    public CustomSuccessResponse getPaginated(Integer page, Integer perPage, Boolean statusFromRequest) throws Exception {
 
         SearchRequest searchRequest = new SearchRequest("todo");
         CountRequest countRequest = new CountRequest("todo");

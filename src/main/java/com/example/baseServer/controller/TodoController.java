@@ -37,12 +37,12 @@ public class TodoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity delete(@PathVariable String id) {
         return ResponseEntity.ok(todoService.delete(id));
     }
 
     @DeleteMapping
-    public ResponseEntity deleteReady() {
+    public ResponseEntity deleteReady() throws IOException {
         return new ResponseEntity<>(todoService.deleteAllReady(), HttpStatus.OK);
     }
 
@@ -65,6 +65,6 @@ public class TodoController {
     public ResponseEntity ResponseEntity(@RequestParam("page") Integer page,
                                          @RequestParam("perPage") Integer perPage,
                                          Boolean status) throws Exception {
-        return new ResponseEntity(todoService.search(page, perPage, status), HttpStatus.OK);
+        return new ResponseEntity(todoService.getPaginated(page, perPage, status), HttpStatus.OK);
     }
 }
