@@ -21,7 +21,6 @@ import com.example.baseServer.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.core.CountRequest;
@@ -29,7 +28,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -106,6 +104,7 @@ public class TodoService {
 
     @Transactional
     public BaseSuccessResponse patchText(ChangeTextTodoDto textTodoDto, String id) {
+
         TodoEntity entity =  todoRepository.findById(id).orElseThrow();
         entity.setText(textTodoDto.getText());
         entity.setUpdatedAt(LocalDateTime.now().toString());
@@ -116,10 +115,6 @@ public class TodoService {
 
     @Transactional
     public BaseSuccessResponse deleteAllReady() throws IOException {
-//        DeleteByQueryRequest request = new DeleteByQueryRequest("todo");
-//        request.setQuery(QueryBuilders.matchQuery("status", "true"));
-//
-//        BulkByScrollResponse response = esClient.deleteByQuery(request, RequestOptions.DEFAULT);
 
         todoRepository.deleteAllByStatus(true);
 
